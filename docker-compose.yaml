@@ -1,0 +1,6 @@
+services:
+  app-course-aston:
+    image: fomabb/ipsearcher:latest
+    container_name: find-city-ip
+    ports:
+      - "4812:4812"
