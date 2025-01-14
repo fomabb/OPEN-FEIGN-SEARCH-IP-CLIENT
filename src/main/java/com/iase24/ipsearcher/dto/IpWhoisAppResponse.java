@@ -1,6 +1,7 @@
 package com.iase24.ipsearcher.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ import lombok.Getter;
 @Schema(description = "Ответ с стороннего API")
 public class IpWhoisAppResponse {
 
+    @Pattern(regexp = "([0-9]{1,3}[.]){3}[0-9]{1,3}", message = "ip адрес не валидный")
     @Schema(description = "ip клиента", example = "178.120.2.192")
     private String ip;
 

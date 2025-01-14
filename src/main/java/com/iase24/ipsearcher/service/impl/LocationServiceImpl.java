@@ -22,9 +22,9 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public LocationClientByIpResponse getLocationByIp(String lang, HttpServletRequest request) {
         Optional<String> ipAddressClient = Optional.ofNullable(getClientIP(request));
-
         IpWhoisAppResponse response = ipResponse(ipAddressClient
-                .orElseThrow(() -> new RuntimeException(String.format("Ip address: %s, not found", ipAddressClient))), lang);
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("Ip address: %s, not found", ipAddressClient))), lang);
 
         if (response == null || response.getCity() == null) {
             return LocationClientByIpResponse.builder().city("Жабинка").build();
@@ -48,7 +48,6 @@ public class LocationServiceImpl implements LocationService {
         if (forwardHeader != null) {
             return forwardHeader.split(",")[0];
         }
-//        return request.getRemoteAddr();
-        return "178.120.2.192";
+        return request.getRemoteAddr();
     }
 }
