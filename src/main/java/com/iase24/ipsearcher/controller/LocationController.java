@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,8 +53,21 @@ public class LocationController {
         return ResponseEntity.ok(locationService.getLocationByIp(lang, request));
     }
 
+    @Operation(summary = "Показать погоду в городе.",
+            description = """
+                    Параметр city: город в котором нужно отобразить данные о погоде.
+                    Параметр в хедере X-Content-Key: ключ для самого API.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            @ApiResponse(responseCode = "400", description = "Недопустимый язык",
+                    content = @Content(schema = @Schema(implementation = RuntimeException.class)))
+    })
     @GetMapping("/weather")
-    public ResponseEntity<WeatherDataDtoResponse> getWeather(@RequestParam("query") String query, @RequestParam("key") String key) {
+    public ResponseEntity<WeatherDataDtoResponse> getWeather(
+            @RequestParam(name = "city", defaultValue = "Zhabinka") String query,
+            @RequestHeader(name = "X-Content-Key", defaultValue = "bd5e378503939ddaee76f12ad7a97608") String key) {
         return ResponseEntity.ok(locationService.getWeather(query, key));
     }
 }

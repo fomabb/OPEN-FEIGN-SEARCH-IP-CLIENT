@@ -1,14 +1,12 @@
 package com.iase24.ipsearcher.service.impl;
 
-import com.iase24.ipsearcher.dto.CoordinateResponse;
 import com.iase24.ipsearcher.dto.IpWhoisAppResponse;
 import com.iase24.ipsearcher.dto.LocationClientByIpResponse;
-import com.iase24.ipsearcher.dto.MainWeatherResponse;
 import com.iase24.ipsearcher.dto.WeatherDataDtoResponse;
-import com.iase24.ipsearcher.dto.WeatherFromList;
 import com.iase24.ipsearcher.feign.GeoApiClient;
 import com.iase24.ipsearcher.feign.GetWeatherResponseApiFeign;
 import com.iase24.ipsearcher.service.LocationService;
+import com.iase24.ipsearcher.util.MapperForWeatherParsing;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.iase24.ipsearcher.util.MapperForWeatherParsing.getMapperFromFeignClientWeather;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class LocationServiceImpl implements LocationService {
 
         WeatherDataDtoResponse response = weatherFeign.getWeather(query, key);
 
-        MapperFromFeignClientWeather result = getMapperFromFeignClientWeather(response);
+        MapperForWeatherParsing.MapperFromFeignClientWeather result = getMapperFromFeignClientWeather(response);
 
         return WeatherDataDtoResponse.builder()
                 .weather(List.of(result.weatherFromList()))
@@ -72,33 +72,5 @@ public class LocationServiceImpl implements LocationService {
             return forwardHeader.split(",")[0];
         }
         return request.getRemoteAddr();
-    }
-
-    private static MapperFromFeignClientWeather getMapperFromFeignClientWeather(WeatherDataDtoResponse response) {
-        WeatherFromList weatherFromList = WeatherFromList.builder()
-                .id(response.getWeather().getFirst().getId())
-                .main(response.getWeather().getFirst().getMain())
-                .description(response.getWeather().getFirst().getDescription())
-                .icon(response.getWeather().getFirst().getIcon())
-                .build();
-
-        MainWeatherResponse mainWeatherResponse = MainWeatherResponse.builder()
-                .temp(response.getMain().getTemp())
-                .feels_like(response.getMain().getFeels_like())
-                .build();
-
-        String timezoneResponse = response.getTimezone();
-        String nameCity = response.getName();
-        CoordinateResponse coord = CoordinateResponse.builder().lon(response.getCoord().getLon()).lat(response.getCoord().getLat()).build();
-
-        return new MapperFromFeignClientWeather(weatherFromList, mainWeatherResponse, timezoneResponse, nameCity, coord);
-    }
-
-    private record MapperFromFeignClientWeather(
-            WeatherFromList weatherFromList,
-            MainWeatherResponse mainWeatherResponse,
-            String timezone,
-            String nameCity,
-            CoordinateResponse coord) {
     }
 }
