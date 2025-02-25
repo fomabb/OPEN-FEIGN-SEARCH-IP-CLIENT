@@ -1,6 +1,7 @@
 package com.iase24.ipsearcher.controller;
 
 import com.iase24.ipsearcher.dto.LocationClientByIpResponse;
+import com.iase24.ipsearcher.dto.WeatherDataDtoResponse;
 import com.iase24.ipsearcher.numerate.Language;
 import com.iase24.ipsearcher.service.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,5 +50,10 @@ public class LocationController {
             lang = String.valueOf(Language.ru);
         }
         return ResponseEntity.ok(locationService.getLocationByIp(lang, request));
+    }
+
+    @GetMapping("/weather")
+    public ResponseEntity<WeatherDataDtoResponse> getWeather(@RequestParam("query") String query, @RequestParam("key") String key) {
+        return ResponseEntity.ok(locationService.getWeather(query, key));
     }
 }
