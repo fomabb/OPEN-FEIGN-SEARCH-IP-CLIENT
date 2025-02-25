@@ -6,7 +6,6 @@ import com.iase24.ipsearcher.dto.WeatherDataDtoResponse;
 import com.iase24.ipsearcher.feign.GeoApiClient;
 import com.iase24.ipsearcher.feign.GetWeatherResponseApiFeign;
 import com.iase24.ipsearcher.service.LocationService;
-import com.iase24.ipsearcher.util.MapperForWeatherParsing;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.iase24.ipsearcher.util.MapperForWeatherParsing.MapperFromFeignClientWeather;
 import static com.iase24.ipsearcher.util.MapperForWeatherParsing.getMapperFromFeignClientWeather;
 
 @Service
@@ -28,13 +28,12 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public WeatherDataDtoResponse getWeather(String query, String key) {
-
         WeatherDataDtoResponse response = weatherFeign.getWeather(query, key);
-
-        MapperForWeatherParsing.MapperFromFeignClientWeather result = getMapperFromFeignClientWeather(response);
+        MapperFromFeignClientWeather result = getMapperFromFeignClientWeather(response);
 
         return WeatherDataDtoResponse.builder()
                 .weather(List.of(result.weatherFromList()))
+                .wind(result.wind())
                 .main(result.mainWeatherResponse())
                 .timezone(result.timezone())
                 .name(result.nameCity())

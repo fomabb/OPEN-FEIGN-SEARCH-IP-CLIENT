@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 public class WeatherDataDtoResponse {
     private List<WeatherFromList> weather;
+    private Wind wind;
     private MainWeatherResponse main;
     private String timezone;
     private String name;
